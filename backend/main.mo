@@ -1,24 +1,36 @@
+import Blob "mo:base/Blob";
+import Int "mo:base/Int";
+import List "mo:base/List";
+import Nat "mo:base/Nat";
+import Nat16 "mo:base/Nat16";
 import Text "mo:base/Text";
 
-import Float "mo:base/Float";
-import Int "mo:base/Int";
 import Debug "mo:base/Debug";
 
-actor Calculator {
-  public func calculate(x : Float, y : Float, op : Text) : async Float {
-    switch (op) {
-      case ("+") { return x + y; };
-      case ("-") { return x - y; };
-      case ("*") { return x * y; };
-      case ("/") {
-        if (y == 0) {
-          Debug.trap("Division by zero");
-        };
-        return x / y;
-      };
-      case (_) {
-        Debug.trap("Invalid operation");
-      };
+actor {
+  public query func http_request(request : HttpRequest) : async HttpResponse {
+    let html = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CryptoBlog</title>\n    <style>\n        :root {\n            --primary-color: #635bff;\n            --text-color: #1a1f36;\n            --background-color: #f7fafc;\n            --card-background: #ffffff;\n        }\n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;\n            line-height: 1.6;\n            color: var(--text-color);\n            background-color: var(--background-color);\n            margin: 0;\n            padding: 0;\n        }\n        .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 0 20px;\n        }\n        header {\n            background-color: var(--card-background);\n            box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n            position: sticky;\n            top: 0;\n            z-index: 1000;\n        }\n        nav {\n            display: flex;\n            justify-content: space-between;\n            align-items: center;\n            padding: 1rem 0;\n        }\n        .logo {\n            font-size: 1.5rem;\n            font-weight: bold;\n            color: var(--primary-color);\n        }\n        nav a {\n            color: var(--text-color);\n            text-decoration: none;\n            margin-left: 1.5rem;\n            transition: color 0.3s ease;\n        }\n        nav a:hover {\n            color: var(--primary-color);\n        }\n        main {\n            padding: 4rem 0;\n        }\n        .post {\n            background-color: var(--card-background);\n            border-radius: 8px;\n            box-shadow: 0 4px 6px rgba(0,0,0,0.1);\n            padding: 2rem;\n            margin-bottom: 2rem;\n            transition: transform 0.3s ease, box-shadow 0.3s ease;\n        }\n        .post:hover {\n            transform: translateY(-5px);\n            box-shadow: 0 6px 12px rgba(0,0,0,0.15);\n        }\n        .post h2 {\n            margin-top: 0;\n            color: var(--primary-color);\n        }\n        .post-meta {\n            color: #64748b;\n            font-size: 0.9rem;\n            margin-bottom: 1rem;\n        }\n        #crypto-prices {\n            background-color: var(--card-background);\n            border-radius: 8px;\n            box-shadow: 0 4px 6px rgba(0,0,0,0.1);\n            padding: 2rem;\n            margin-top: 2rem;\n        }\n        #crypto-prices h3 {\n            margin-top: 0;\n            color: var(--primary-color);\n        }\n        .price-item {\n            display: flex;\n            justify-content: space-between;\n            margin-bottom: 1rem;\n            padding: 0.5rem 0;\n            border-bottom: 1px solid #e2e8f0;\n        }\n        .price-item:last-child {\n            border-bottom: none;\n        }\n        @keyframes fadeIn {\n            from { opacity: 0; transform: translateY(20px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        .fade-in {\n            animation: fadeIn 0.5s ease-out forwards;\n        }\n        @media (max-width: 768px) {\n            nav {\n                flex-direction: column;\n                align-items: flex-start;\n            }\n            nav a {\n                margin-left: 0;\n                margin-top: 0.5rem;\n            }\n        }\n    </style>\n</head>\n<body>\n    <header>\n        <div class=\"container\">\n            <nav>\n                <div class=\"logo\">CryptoBlog</div>\n                <div>\n                    <a href=\"#\" onclick=\"showHome()\">Home</a>\n                    <a href=\"#\" onclick=\"showAbout()\">About</a>\n                </div>\n            </nav>\n        </div>\n    </header>\n\n    <div class=\"container\">\n        <main id=\"main-content\">\n            <!-- Content will be dynamically inserted here -->\n        </main>\n\n        <section id=\"crypto-prices\">\n            <h3>Latest Crypto Prices</h3>\n            <div id=\"price-list\">\n                <!-- Prices will be dynamically inserted here -->\n            </div>\n        </section>\n    </div>\n\n    <script>\n        const posts = [\n            {\n                title: \"The Future of Decentralized Finance\",\n                date: \"2024-09-10\",\n                content: \"Decentralized Finance (DeFi) is revolutionizing the way we think about financial systems. By leveraging blockchain technology, DeFi platforms are creating new opportunities for lending, borrowing, and earning interest without traditional intermediaries. As we look to the future, the potential for DeFi to reshape the global financial landscape becomes increasingly clear.\"\n            },\n            {\n                title: \"Understanding Blockchain Scalability\",\n                date: \"2024-09-08\",\n                content: \"As blockchain networks grow in popularity, scalability becomes a critical issue. This post explores various solutions being developed to address blockchain scalability, including layer 2 solutions, sharding, and alternative consensus mechanisms. We'll dive into the technical challenges and the innovative approaches being taken to overcome them.\"\n            },\n            {\n                title: \"The Impact of Crypto on Global Remittances\",\n                date: \"2024-09-05\",\n                content: \"Cryptocurrency is transforming the landscape of global remittances, offering faster and cheaper alternatives to traditional money transfer services. This post examines how crypto is being used for cross-border payments and its potential to improve financial inclusion. We'll look at real-world examples and the challenges that need to be overcome.\"\n            }\n        ];\n\n        function showHome() {\n            const mainContent = document.getElementById('main-content');\n            mainContent.innerHTML = posts.map((post, index) => `\n                <article class=\"post fade-in\" style=\"animation-delay: ${index * 0.2}s\">\n                    <h2>${post.title}</h2>\n                    <div class=\"post-meta\">Published on ${post.date}</div>\n                    <p>${post.content}</p>\n                </article>\n            `).join('');\n        }\n\n        function showAbout() {\n            const mainContent = document.getElementById('main-content');\n            mainContent.innerHTML = `\n                <div class=\"post fade-in\">\n                    <h2>About CryptoBlog</h2>\n                    <p>Welcome to CryptoBlog, your premier source for the latest news, analysis, and insights in the world of cryptocurrency and blockchain technology. Our team of experts is dedicated to bringing you accurate and up-to-date information to help you navigate this exciting and rapidly evolving field.</p>\n                    <p>At CryptoBlog, we believe in the transformative power of blockchain technology and its potential to reshape industries and empower individuals. Our mission is to demystify complex concepts, provide thoughtful analysis, and keep you informed about the latest trends and developments in the crypto space.</p>\n                </div>\n            `;\n        }\n\n        function updatePrices() {\n            const prices = {\n                \"Bitcoin\": \"$\" + (Math.random() * 10000 + 30000).toFixed(2),\n                \"Ethereum\": \"$\" + (Math.random() * 1000 + 2000).toFixed(2),\n                \"Cardano\": \"$\" + (Math.random() * 1 + 0.5).toFixed(2)\n            };\n\n            const priceList = document.getElementById('price-list');\n            priceList.innerHTML = Object.entries(prices).map(([coin, price]) => `\n                <div class=\"price-item\">\n                    <span>${coin}</span>\n                    <span>${price}</span>\n                </div>\n            `).join('');\n        }\n\n        showHome();\n        updatePrices();\n        setInterval(updatePrices, 60000);\n    </script>\n</body>\n</html>";
+
+    {
+      status_code = 200;
+      headers = [
+        ("Content-Type", "text/html"),
+        ("Content-Length", debug_show(html.size()))
+      ];
+      body = Text.encodeUtf8(html);
     };
   };
-}
+
+  type HttpRequest = {
+    method : Text;
+    url : Text;
+    headers : [(Text, Text)];
+    body : Blob;
+  };
+
+  type HttpResponse = {
+    status_code : Nat16;
+    headers : [(Text, Text)];
+    body : Blob;
+  };
+};

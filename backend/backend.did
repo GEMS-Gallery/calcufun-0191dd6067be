@@ -1,3 +1,22 @@
+type HttpResponse = 
+ record {
+   body: blob;
+   headers: vec record {
+                  text;
+                  text;
+                };
+   status_code: nat16;
+ };
+type HttpRequest = 
+ record {
+   body: blob;
+   headers: vec record {
+                  text;
+                  text;
+                };
+   method: text;
+   url: text;
+ };
 service : {
-  calculate: (float64, float64, text) -> (float64);
+  http_request: (HttpRequest) -> (HttpResponse) query;
 }
